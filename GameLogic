@@ -1,0 +1,36 @@
+package guessthenumbergame;
+import java.util.Random;
+
+public class GameLogic {
+
+    private int number;
+    private int attempts;
+
+    public GameLogic() {
+        resetGame();
+    }
+
+    public void resetGame() {
+        Random random = new Random();
+        number = random.nextInt(10) + 1;
+        attempts = 5;
+    }
+
+    public String checkGuess(int guess) {
+        attempts--;
+
+        if (guess == number) {
+            return "correct";
+        } else if (attempts == 0) {
+            return "gameover:" + number;
+        } else if (guess < number) {
+            return "low";
+        } else {
+            return "high";
+        }
+    }
+
+    public int getAttempts() {
+        return attempts;
+    }
+}
