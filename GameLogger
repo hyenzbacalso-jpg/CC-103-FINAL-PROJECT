@@ -1,0 +1,18 @@
+package guessthenumbergame;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+
+public class GameLogger {
+
+    public static void saveResult(String message) {
+        try (FileWriter writer = new FileWriter("game_results.txt", true)) {
+
+            writer.write(LocalDateTime.now() + " - " + message + "\n");
+
+        } catch (IOException e) {
+            System.out.println("File Error: " + e.getMessage());
+        }
+    }
+}
