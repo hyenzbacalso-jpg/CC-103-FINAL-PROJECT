@@ -1,0 +1,146 @@
+package guessthenumbergame;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class GuessTheNumberGame extends JFrame implements ActionListener {
+
+    JLabel lblTitle = new JLabel("Guess The Number (1-10)", JLabel.CENTER);
+    JLabel lblResult = new JLabel("You have 5 attempts!", JLabel.CENTER);
+
+    JTextField txtGuess = new JTextField();
+
+    JButton btnGuess = new JButton("GUESS");
+    JButton btnRestart = new JButton("PLAY AGAIN");
+
+    GameLogic game = new GameLogic();
+
+    public GuessTheNumberGame() {
+
+        super("Colorful Guess Game");
+
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+
+        getContentPane().setBackground(new Color(255, 204, 255));
+
+        lblTitle.setBounds(40, 20, 300, 40);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 22));
+        lblTitle.setForeground(Color.BLUE);
+
+        lblResult.setBounds(60, 60, 250, 30);
+        lblResult.setFont(new Font("Arial", Font.BOLD, 16));
+
+        txtGuess.setBounds(110, 110, 150, 40);
+        txtGuess.setFont(new Font("Arial", Font.BOLD, 20));
+        txtGuess.setHorizontalAlignment(JTextField.CENTER);
+
+        btnGuess.setBounds(60, 180, 120, 40);
+        btnRestart.setBounds(200, 180, 140, 40);
+
+        btnGuess.setBackground(Color.CYAN);
+        btnRestart.setBackground(Color.PINK);
+
+        add(lblTitle);
+        add(lblResult);
+        add(txtGuess);
+        add(btnGuess);
+        add(btnRestart);
+
+        btnGuess.addActionListener(this);
+        btnRestart.addActionListener(this);
+        setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == btnGuess) {
+
+            handleGuess();
+
+        } else if (e.getSource() == btnRestart) {
+
+            game.resetGame();
+
+            lblResult.setText("New Game Started!");
+
+            txtGuess.setText("");
+
+            btnGuess.setEnabled(true);
+
+            getContentPane().setBackground(new Color(255, 204, 255));
+        }
+
+    }
+
+    public void handleGuess() {
+
+        String input = txtGuess.getText().trim();
+
+        if (input.isEmpty()) {
+            lblResult.setText("Please enter a number!");
+            return;
+        }
+
+        if (!input.matches("^(10|[1-9])$")) {
+            lblResult.setText("Only numbers 1–10 allowed!");
+            txtGuess.setText("");
+            return;
+        }
+
+        try {
+
+            int guess = Integer.parseInt(input);
+
+            String result = game.checkGuess(guess);
+
+            if (result.equals("correct")) {
+
+                lblResult.setText("Correct! You Win!");
+                getContentPane().setBackground(Color.GREEN);
+
+                btnGuess.setEnabled(false);
+
+                GameLogger.saveResult("WIN");
+
+            } else if (result.startsWith("gameover")) {
+
+                int correct = Integer.parseInt(result.split(":")[1]);
+
+                lblResult.setText("Game Over! Number was " + correct);
+
+                getContentPane().setBackground(Color.RED);
+
+                btnGuess.setEnabled(false);
+
+                GameLogger.saveResult("LOSE - number was " + correct);
+
+            } else if (result.equals("low")) {
+
+                lblResult.setText("Too Low! Attempts: " + game.getAttempts());
+
+                getContentPane().setBackground(Color.YELLOW);
+
+            } else {
+
+                lblResult.setText("Too High! Attempts: " + game.getAttempts());
+
+                getContentPane().setBackground(Color.ORANGE);
+            }
+
+        } catch (Exception ex) {
+
+            lblResult.setText("Invalid input!");
+        }
+
+        txtGuess.setText("");
+    }
+
+    public static void main(String[] args) {
+
+        new GuessTheNumberGame();
+    }
+}
